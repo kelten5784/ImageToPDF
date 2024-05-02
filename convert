@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image to PDF Converter</title>
+</head>
+<body>
+<input type="file" accept="image/*" id="fileInput">
+<button onclick="convertToPDF()">Convert to PDF</button>
+
+<script>
+function convertToPDF() {
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert('Please select an image file.');
+    return;
+  }
+
+  if (!file.type.startsWith('image/')) {
+    alert('Please select an image file.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.src = event.target.result;
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      
+      const pdf = new jsPDF();
+      pdf.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, canvas.width, canvas.height);
+      pdf.save('converted.pdf');
+    };
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.3/jspdf.umd.min.js"></script>
+</body>
+</html>
